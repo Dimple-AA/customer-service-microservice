@@ -96,6 +96,7 @@ kubectl apply -f k8s/
 kubectl get pods
 kubectl get svc
 minikube ip
+minikube service customer-service
 ```
 
 Access service:
@@ -104,14 +105,73 @@ Access service:
 http://<minikube-ip>:30080/customers
 ```
 
+---
+
+## 📊 Enabling Resource Monitoring (Metrics Server)
+
+The Metrics Server allows viewing **CPU and Memory usage** of nodes and pods.
+
+### 1️⃣ Apply Metrics Server
+
 ```bash
-minikube docker-env
-kubectl logs customer-service-765597dd79-pjggn
-minikube docker-env
-& minikube -p minikube docker-env | Invoke-Expression
-docker build -t customer-service:latest
-kubectl apply -f k8s/customer-service.yaml
-minikube tunnel
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+### 2️⃣ Patch Metrics Server for Minikube
+
+Create patch file:
+
+```bash
+notepad metrics-patch.json
+```
+
+Paste and save:
+
+```json
+[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/args/-",
+    "value": "--kubelet-insecure-tls"
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/args/-",
+    "value": "--kubelet-preferred-address-types=InternalIP"
+  }
+]
+```
+
+Apply the patch:
+
+```bash
+kubectl -n kube-system patch deployment metrics-server --type=json --patch-file metrics-patch.json
+```
+
+### 3️⃣ Verify Metrics Server is Running
+
+```bash
+kubectl get pods -n kube-system | findstr metrics
+```
+
+Expected:
+
+```
+metrics-server-xxxxx   1/1   Running
+```
+
+### 4️⃣ View Resource Consumption
+
+```bash
+kubectl top nodes
+kubectl top pods
+```
+
+Sample Output:
+
+```
+NAME        CPU(cores)   MEMORY(bytes)
+minikube    120m         1450Mi
 ```
 
 ---
@@ -122,7 +182,7 @@ minikube tunnel
 GET /health
 ```
 
-Expected Response:
+Response:
 
 ```json
 { "status": "UP" }
@@ -134,9 +194,8 @@ Expected Response:
 
 - Built microservices with separation of concerns
 - Understood containerization via Docker
-- Learned how to deploy to Kubernetes using Minikube
-- Implemented health checks and logging for observability
-- Worked with mock services to enable parallel development
+- Deployed services on Kubernetes using Minikube
+- Implemented service health checks and monitoring with Metrics Server
 
 ---
 
