@@ -34,32 +34,33 @@ customer-service/
 │── server.js
 │── .env
 ```
+
 ---
 
 ## 🔧 Technologies Used
 
-| Component        | Technology         |
-|-----------------|--------------------|
-| Backend API     | Node.js + Express  |
-| Database        | MongoDB            |
-| Communication   | REST APIs          |
-| Containerization| Docker, Docker Compose |
-| Orchestration   | Kubernetes (Minikube) |
-| Language        | JavaScript         |
+| Component        | Technology             |
+| ---------------- | ---------------------- |
+| Backend API      | Node.js + Express      |
+| Database         | MongoDB                |
+| Communication    | REST APIs              |
+| Containerization | Docker, Docker Compose |
+| Orchestration    | Kubernetes (Minikube)  |
+| Language         | JavaScript             |
 
 ---
 
 ## 🚀 API Endpoints
 
-| Method | Endpoint                   | Description                         |
-|--------|----------------------------|-------------------------------------|
-| GET    | `/customers`               | Retrieve all customers              |
-| GET    | `/customers/:id`           | Get customer by ID                  |
-| POST   | `/customers`               | Create a new customer               |
-| PUT    | `/customers/:id`           | Update existing customer            |
-| DELETE | `/customers/:id`           | Delete a customer                   |
-| POST   | `/customers/bulk-upload`   | Upload multiple records via CSV     |
-| GET    | `/health`                  | Service health check                |
+| Method | Endpoint                 | Description                     |
+| ------ | ------------------------ | ------------------------------- |
+| GET    | `/customers`             | Retrieve all customers          |
+| GET    | `/customers/:id`         | Get customer by ID              |
+| POST   | `/customers`             | Create a new customer           |
+| PUT    | `/customers/:id`         | Update existing customer        |
+| DELETE | `/customers/:id`         | Delete a customer               |
+| POST   | `/customers/bulk-upload` | Upload multiple records via CSV |
+| GET    | `/health`                | Service health check            |
 
 ---
 
@@ -71,6 +72,7 @@ node server.js
 ```
 
 Open in browser:
+
 ```
 http://localhost:3000/customers
 ```
@@ -81,6 +83,7 @@ http://localhost:3000/customers
 
 ```bash
 docker-compose up --build
+docker ps
 ```
 
 ---
@@ -96,8 +99,19 @@ minikube ip
 ```
 
 Access service:
+
 ```
 http://<minikube-ip>:30080/customers
+```
+
+```bash
+minikube docker-env
+kubectl logs customer-service-765597dd79-pjggn
+minikube docker-env
+& minikube -p minikube docker-env | Invoke-Expression
+docker build -t customer-service:latest
+kubectl apply -f k8s/customer-service.yaml
+minikube tunnel
 ```
 
 ---
@@ -109,6 +123,7 @@ GET /health
 ```
 
 Expected Response:
+
 ```json
 { "status": "UP" }
 ```
