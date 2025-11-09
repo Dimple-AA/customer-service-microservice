@@ -29,16 +29,19 @@ async function createCustomer(req, res) {
     // 🏦 Create Account in Account Service
     await external.createAccountForCustomer({
       customer_id: customer.customer_id,
-      name: customer.name,
+      account_number: customer.customer_id,
+      account_type: "SAVINGS",
+      Initial_deposit: 10000.0,
     });
 
     // 🔔 Send Notification
     await external.sendNotification({
-      type: "CUSTOMER_CREATED",
-      customer_id: customer.customer_id,
-      email: customer.email,
-      phone: customer.phone,
-      message: `Customer ${customer.name} created.`,
+      accountNumber: customer.customer_id,
+      customerName: customer.name,
+      customerEmail: customer.email,
+      customerPhone: customer.phone,
+      eventType: "CUSTOMER_CREATED",
+      description: `Customer ${customer.name} created.`,
     });
 
     return res.status(201).json(customer);
